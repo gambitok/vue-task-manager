@@ -1,42 +1,57 @@
 <script setup lang="ts">
-  import {ref, computed} from "vue";
+import { ref, computed } from 'vue'
 
-  const taskName = ref<string>('')
-  const tasks = ref<string[]>([])
+const taskName = ref<string>('')
+const taskCount = computed(() => tasks.value.length)
+const completedCount = computed(() => tasks.value.filter((task) => task.completed).length)
+const pendingCount = computed(() => tasks.value.filter((task) => !task.completed).length)
 
-  const taskCount = computed(() => tasks.value.length)
+interface Task {
+  id: number
+  title: string
+  completed: boolean
+}
 
-  function addTask() {
-    if (!taskName.value.trim()) return
-    tasks.value.push(taskName.value.trim())
-    taskName.value = ''
-  }
+const tasks = ref<Task[]>([])
 
-  function clearTasks() {
-    tasks.value = []
-  }
+function addTask() {
+  if (!taskName.value.trim()) return
+  tasks.value.push({
+    id: Date.now(),
+    title: taskName.value.trim(),
+    completed: false,
+  })
+  taskName.value = ''
+}
 
-  function deleteTask(index: number) {
-    tasks.value.splice(index, 1)
-  }
+function clearTasks() {
+  tasks.value = []
+}
+
+function deleteTask(id: number) {
+  tasks.value = tasks.value.filter((task) => task.id !== id)
+}
 </script>
 
 <template>
-  <input v-model="taskName" placeholder="Enter task name">
-  <button @click="addTask">Add Task</button>
+  <form @submit.prevent="addTask">
+    <input v-model="taskName" placeholder="Enter task name" />
+    <button type="submit">Add Task</button>
+  </form>
   <div v-if="tasks.length > 0">
-    <p>Task Count: {{ taskCount }}</p>
+    <p>Total: {{ taskCount }}</p>
+    <p>Completed: {{ completedCount }}</p>
+    <p>Pending: {{ pendingCount }}</p>
     <p>Saved Task:</p>
     <ul>
-      <li v-for="(task, index) in tasks" :key="index">
-        {{ task }}
-        <button @click="deleteTask(index)">X</button>
+      <li v-for="task in tasks" :key="task.id">
+        {{ task.title }}
+        <input type="checkbox" v-model="task.completed" />
+        <button @click="deleteTask(task.id)">X</button>
       </li>
     </ul>
   </div>
-  <button @click="clearTasks">Clear</button>
+  <button v-if="tasks.length" @click="clearTasks">Clear All</button>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
