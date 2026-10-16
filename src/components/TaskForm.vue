@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-const taskName = ref<string>('')
-const taskCount = computed(() => tasks.value.length)
-const completedCount = computed(() => tasks.value.filter((task) => task.completed).length)
-const pendingCount = computed(() => tasks.value.filter((task) => !task.completed).length)
+import { ref, computed, watch, onMounted } from 'vue'
 
 interface Task {
   id: number
@@ -13,6 +8,19 @@ interface Task {
 }
 
 const tasks = ref<Task[]>([])
+
+const taskName = ref<string>('')
+const taskCount = computed(() => tasks.value.length)
+const completedCount = computed(() => tasks.value.filter((task) => task.completed).length)
+const pendingCount = computed(() => tasks.value.filter((task) => !task.completed).length)
+
+onMounted(() => {
+  const savedTasks = localStorage.getItem('tasks')
+
+  if (savedTasks) {
+    tasks.value = JSON.parse(savedTasks) as Task[]
+  }
+})
 
 function addTask() {
   if (!taskName.value.trim()) return
@@ -31,6 +39,14 @@ function clearTasks() {
 function deleteTask(id: number) {
   tasks.value = tasks.value.filter((task) => task.id !== id)
 }
+
+watch(
+  tasks,
+  (newTasks) => {
+    localStorage.setItem('tasks', JSON.stringify(newTasks))
+  },
+  { deep: true }, // Enable deep watching for nested properties
+)
 </script>
 
 <template>
