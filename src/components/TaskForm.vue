@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 
+import TaskStats from '@/components/TaskStats.vue'
+import TaskItem from '@/components/TaskItem.vue'
+
 interface Task {
   id: number
   title: string
@@ -40,6 +43,22 @@ function deleteTask(id: number) {
   tasks.value = tasks.value.filter((task) => task.id !== id)
 }
 
+function toggleTask(id: number) {
+  const task = tasks.value.find((task) => task.id === id)
+
+  if (task) {
+    task.completed = !task.completed
+  }
+}
+
+function editTask(id: number, title: string) {
+  const task = tasks.value.find((task) => task.id === id)
+
+  if (task) {
+    task.title = title
+  }
+}
+
 watch(
   tasks,
   (newTasks) => {
@@ -50,21 +69,24 @@ watch(
 </script>
 
 <template>
+  <TaskStats :total="taskCount" :completed="completedCount" :pending="pendingCount" />
   <form @submit.prevent="addTask">
     <input v-model="taskName" placeholder="Enter task name" />
     <button type="submit">Add Task</button>
   </form>
   <div v-if="tasks.length > 0">
-    <p>Total: {{ taskCount }}</p>
-    <p>Completed: {{ completedCount }}</p>
-    <p>Pending: {{ pendingCount }}</p>
     <p>Saved Task:</p>
     <ul>
-      <li v-for="task in tasks" :key="task.id">
-        {{ task.title }}
-        <input type="checkbox" v-model="task.completed" />
-        <button @click="deleteTask(task.id)">X</button>
-      </li>
+      <TaskItem
+        v-for="task in tasks"
+        :key="task.id"
+        :id="task.id"
+        :title="task.title"
+        :completed="task.completed"
+        @delete="deleteTask"
+        @edit="editTask"
+        @toggle="toggleTask"
+      />
     </ul>
   </div>
   <button v-if="tasks.length" @click="clearTasks">Clear All</button>
