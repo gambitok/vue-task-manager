@@ -1,10 +1,11 @@
-<script setup lang="ts">
-import TaskForm from "@/components/TaskForm.vue";
-</script>
-
 <template>
-  <h1>My Task Manager</h1>
-  <TaskForm />
-</template>
+  <nav>
+    <RouterLink to="/">Home</RouterLink>
+    |
+    <RouterLink to="/tasks">Tasks</RouterLink>
+    |
+    <RouterLink to="/counter">Counter</RouterLink>
+  </nav>
 
-<style scoped></style>
+  <RouterView />
+</template>
