@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '@/views/HomeView.vue'
 import TasksView from '@/views/TasksView.vue'
-import CounterView from '@/views/CounterView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,10 +13,6 @@ const router = createRouter({
     {
       path: '/tasks',
       component: TasksView,
-    },
-    {
-      path: '/counter',
-      component: CounterView,
     },
   ],
 })
