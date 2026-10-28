@@ -16,20 +16,28 @@ onMounted(() => {
 <template>
   <h1>Tasks</h1>
 
-  <TaskStats
-    :total="taskStore.taskCount"
-    :completed="taskStore.completedCount"
-    :pending="taskStore.pendingCount"
-  />
+  <p v-if="taskStore.error" style="color: red">
+    {{ taskStore.error }}
+  </p>
 
-  <TaskForm @add="taskStore.addTask" />
+  <p v-if="taskStore.loading">Loading tasks...</p>
 
-  <TaskList
-    :tasks="taskStore.tasks"
-    @delete="taskStore.deleteTask"
-    @toggle="taskStore.toggleTask"
-    @edit="taskStore.editTask"
-  />
+  <template v-else>
+    <TaskStats
+      :total="taskStore.taskCount"
+      :completed="taskStore.completedCount"
+      :pending="taskStore.pendingCount"
+    />
 
-  <button v-if="taskStore.tasks.length" @click="taskStore.clearTasks">Clear All</button>
+    <TaskForm @add="taskStore.addTask" />
+
+    <TaskList
+      :tasks="taskStore.tasks"
+      @delete="taskStore.deleteTask"
+      @toggle="taskStore.toggleTask"
+      @edit="taskStore.editTask"
+    />
+
+    <button v-if="taskStore.tasks.length" @click="taskStore.clearTasks()">Clear All</button>
+  </template>
 </template>

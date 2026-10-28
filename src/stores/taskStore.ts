@@ -5,48 +5,92 @@ import { getTasks } from '../services/taskApi'
 import { createTask } from '../services/taskApi'
 import { deleteTask as deleteTaskApi } from '../services/taskApi'
 import { updateTask as updateTaskApi } from '../services/taskApi'
+const loading = ref(false)
+const error = ref<string | null>(null)
 
 export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>([])
 
   async function loadTasks() {
-    tasks.value = await getTasks()
+    loading.value = true
+    error.value = null
+
+    try {
+      tasks.value = await getTasks()
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to load tasks'
+    } finally {
+      loading.value = false
+    }
   }
 
   async function addTask(title: string) {
-    const newTask = await createTask(title)
-    tasks.value.push(newTask)
+    error.value = null
+
+    try {
+      const newTask = await createTask(title)
+      tasks.value.push(newTask)
+    } catch (err) {
+      handleError(err)
+    }
   }
 
   async function deleteTask(id: number) {
-    await deleteTaskApi(id)
-    tasks.value = tasks.value.filter((task) => task.id !== id)
+    error.value = null
+
+    try {
+      await deleteTaskApi(id)
+      tasks.value = tasks.value.filter((task) => task.id !== id)
+    } catch (err) {
+      handleError(err)
+    }
   }
 
   async function toggleTask(id: number) {
-    const task = tasks.value.find((task) => task.id === id)
+    error.value = null
 
+    const task = tasks.value.find((task) => task.id === id)
     if (!task) return
 
-    const updatedTask = await updateTaskApi(id, {
-      completed: !task.completed,
-    })
+    try {
+      const updatedTask = await updateTaskApi(id, {
+        completed: !task.completed,
+      })
 
-    tasks.value = tasks.value.map((task) => (task.id === id ? updatedTask : task))
+      tasks.value = tasks.value.map((task) => (task.id === id ? updatedTask : task))
+    } catch (err) {
+      handleError(err)
+    }
   }
 
   async function editTask(id: number, title: string) {
-    const updatedTask = await updateTaskApi(id, { title })
+    error.value = null
 
-    tasks.value = tasks.value.map((task) => (task.id === id ? updatedTask : task))
+    try {
+      const updatedTask = await updateTaskApi(id, { title })
+
+      tasks.value = tasks.value.map((task) => (task.id === id ? updatedTask : task))
+    } catch (err) {
+      handleError(err)
+    }
   }
 
   async function clearTasks() {
-    const ids = tasks.value.map((task) => task.id)
+    error.value = null
 
-    await Promise.all(ids.map((id) => deleteTaskApi(id)))
+    try {
+      const ids = tasks.value.map((task) => task.id)
 
-    tasks.value = []
+      await Promise.all(ids.map((id) => deleteTaskApi(id)))
+      tasks.value = []
+    } catch (err) {
+      handleError(err)
+      await loadTasks()
+    }
+  }
+
+  function handleError(err: unknown) {
+    error.value = err instanceof Error ? err.message : 'Something went wrong'
   }
 
   const taskCount = computed(() => tasks.value.length)
@@ -60,6 +104,8 @@ export const useTaskStore = defineStore('tasks', () => {
     taskCount,
     completedCount,
     pendingCount,
+    loading,
+    error,
     loadTasks,
     addTask,
     deleteTask,
