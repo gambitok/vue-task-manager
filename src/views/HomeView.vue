@@ -6,7 +6,5 @@ const taskStore = useTaskStore()
 
 <template>
   <h1>Home</h1>
-
-  <p>Count: {{ taskStore.count }}</p>
-  <button @click="taskStore.increment()">Increment from Home</button>
+  <p>Total tasks: {{ taskStore.taskCount }}</p>
 </template>

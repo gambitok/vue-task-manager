@@ -1,0 +1,20 @@
+{
+  "tasks": [
+    {
+      "title": "test 1",
+      "completed": false,
+      "id": "j8gfRE9GvQ8"
+    },
+    {
+      "title": "test 2",
+      "completed": true,
+      "id": "KNMdYggpAgw"
+    },
+    {
+      "title": "test3",
+      "completed": false,
+      "id": "TeTiGdJLeNo"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

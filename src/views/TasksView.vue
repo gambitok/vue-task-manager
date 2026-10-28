@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTasks } from '@/composables/useTasks'
+import { onMounted } from 'vue'
 import { useTaskStore } from '../stores/taskStore'
 
 import TaskForm from '@/components/tasks/TaskForm.vue'
@@ -7,30 +7,29 @@ import TaskStats from '@/components/tasks/TaskStats.vue'
 import TaskList from '@/components/tasks/TaskList.vue'
 
 const taskStore = useTaskStore()
-const {
-  tasks,
-  taskCount,
-  completedCount,
-  pendingCount,
-  addTask,
-  deleteTask,
-  toggleTask,
-  editTask,
-  clearTasks,
-} = useTasks()
+
+onMounted(() => {
+  taskStore.loadTasks()
+})
 </script>
 
 <template>
   <h1>Tasks</h1>
 
-  <p>Count: {{ taskStore.count }}</p>
-  <button @click="taskStore.increment()">Increment</button>
+  <TaskStats
+    :total="taskStore.taskCount"
+    :completed="taskStore.completedCount"
+    :pending="taskStore.pendingCount"
+  />
 
-  <TaskStats :total="taskCount" :completed="completedCount" :pending="pendingCount" />
+  <TaskForm @add="taskStore.addTask" />
 
-  <TaskForm @add="addTask" />
+  <TaskList
+    :tasks="taskStore.tasks"
+    @delete="taskStore.deleteTask"
+    @toggle="taskStore.toggleTask"
+    @edit="taskStore.editTask"
+  />
 
-  <TaskList :tasks="tasks" @delete="deleteTask" @toggle="toggleTask" @edit="editTask" />
-
-  <button v-if="tasks.length" @click="clearTasks">Clear All</button>
+  <button v-if="taskStore.tasks.length" @click="taskStore.clearTasks">Clear All</button>
 </template>

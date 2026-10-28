@@ -45,21 +45,21 @@ export function useTasks() {
     tasks.value = []
   }
 
-  onMounted(() => {
-    const savedTasks = localStorage.getItem('tasks')
-
-    if (savedTasks) {
-      tasks.value = JSON.parse(savedTasks) as Task[]
-    }
-  })
-
-  watch(
-    tasks,
-    (newTasks) => {
-      localStorage.setItem('tasks', JSON.stringify(newTasks))
-    },
-    { deep: true },
-  )
+  // onMounted(() => {
+  //   const savedTasks = localStorage.getItem('tasks')
+  //
+  //   if (savedTasks) {
+  //     tasks.value = JSON.parse(savedTasks) as Task[]
+  //   }
+  // })
+  //
+  // watch(
+  //   tasks,
+  //   (newTasks) => {
+  //     localStorage.setItem('tasks', JSON.stringify(newTasks))
+  //   },
+  //   { deep: true },
+  // )
 
   return {
     tasks,

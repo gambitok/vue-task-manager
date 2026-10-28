@@ -23,3 +23,9 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### Local JSON Server
+
+```sh
+npx json-server db.json --port 3000
+```
